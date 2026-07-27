@@ -1,0 +1,24 @@
+# Build artifacts (staged by prep-build, never committed)
+build/
+output/
+dist/
+*.exe
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Env / logs
+.env
+*.log
