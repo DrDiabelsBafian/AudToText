@@ -146,7 +146,7 @@ if (-not (Test-Path $SourceDir)) {
     foreach ($dictName in @("PROMPTS", "CORRECTIONS", "DICTIONNAIRE")) {
         $dictSrc = Join-Path $SourceDir $dictName
         if (Test-Path $dictSrc) {
-            Copy-Item $dictSrc (Join-Path $appDest $dictName) -Recurse -Force
+            $dictDest = Join-Path $appDest $dictName; if (Test-Path $dictDest) { Remove-Item $dictDest -Recurse -Force }; Copy-Item $dictSrc $dictDest -Recurse -Force
             $nf = (Get-ChildItem (Join-Path $appDest $dictName) -Recurse -File).Count
             Write-Host "[OK] $dictName\ : $nf fichiers" -ForegroundColor Green
             $dictFound++
@@ -200,3 +200,4 @@ Write-Host "  2. Ctrl+F9 pour compiler" -ForegroundColor White
 Write-Host "  3. Installeur genere dans: output\AudioToText_Setup_V11.0.exe" -ForegroundColor White
 Write-Host ""
 Read-Host "Entree pour fermer"
+
