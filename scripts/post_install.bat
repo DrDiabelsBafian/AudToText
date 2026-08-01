@@ -1,15 +1,16 @@
 @echo off
 :: ============================================================
-:: Post-Install: pip install dependencies (V2 - 23-07-26)
+:: Post-Install: pip install dependencies (V3 - 31-07-26)
 :: Called by Inno Setup during installation
 :: Arg1 = APP_DIR (install path)
 ::
-:: V2 CHANGES (DLL safety - see Beta Audio venv reference):
-::   - ALL versions pinned: ctranslate2==4.6.3 PyQt6==6.7.1
-::     faster-whisper==1.1.1 torch==2.6.0+cpu
-::   - torch CPU added (required by core/config.py)
-::   - sounddevice numpy python-docx requests added (mic, DOCX export)
-::   - ctranslate2 version guard in verification step
+:: V3 CHANGES:
+::   - SELF-LOGGING: toute la sortie va dans logs\post_install.log
+::     (indispensable: Inno runhidden avale stdout/stderr)
+::   - Diagnostics env en tete de log (python, pip, reseau pypi)
+::   - Pip VERBOSE (--quiet retire) pour diagnostic complet
+:: V2: pins ctranslate2==4.6.3 PyQt6==6.7.1 torch==2.6.0+cpu
+::     faster-whisper==1.1.1 + sounddevice numpy python-docx requests
 :: NEVER upgrade ctranslate2 beyond 4.6.3 without full DLL test
 :: ============================================================
 
@@ -17,43 +18,65 @@ set "APP_DIR=%~1"
 if "%APP_DIR%"=="" set "APP_DIR=%~dp0.."
 
 set "PYTHON=%APP_DIR%\bin\python\python.exe"
+set "LOGDIR=%APP_DIR%\logs"
+set "LOGFILE=%LOGDIR%\post_install.log"
 
+if not exist "%LOGDIR%" mkdir "%LOGDIR%" 2>nul
+
+call :main > "%LOGFILE%" 2>&1
+exit /b %errorlevel%
+
+:: ============================================================
+:main
 echo ============================================
-echo  Audio-To-Text - Installation dependances
+echo  Audio-To-Text - Installation dependances V3
+echo  %date% %time%
 echo ============================================
 echo.
 
-:: Check Python
+:: --- Diagnostics environnement ---
+echo [DIAG] APP_DIR = %APP_DIR%
+echo [DIAG] PYTHON  = %PYTHON%
+echo [DIAG] CD      = %cd%
+echo [DIAG] USERPROFILE = %USERPROFILE%
+
 if not exist "%PYTHON%" (
     echo [FAIL] Python introuvable: %PYTHON%
     exit /b 1
 )
 
-echo [1/5] Mise a jour pip...
-"%PYTHON%" -m pip install --upgrade pip --no-warn-script-location --quiet 2>nul
-
-echo [2/5] Installation torch CPU (environ 200 MB, patienter)...
-"%PYTHON%" -m pip install torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu --no-warn-script-location --quiet
+"%PYTHON%" --version
 if errorlevel 1 (
-    echo [WARN] torch install failed, retry verbose...
-    "%PYTHON%" -m pip install torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu --no-warn-script-location
+    echo [FAIL] python.exe ne s'execute pas - code %errorlevel%
+    exit /b 1
 )
 
-echo [3/5] Installation combo pinne (PyQt6 + ctranslate2 + faster-whisper)...
-"%PYTHON%" -m pip install PyQt6==6.7.1 ctranslate2==4.6.3 faster-whisper==1.1.1 --no-warn-script-location --quiet
+"%PYTHON%" -m pip --version
 if errorlevel 1 (
-    echo [WARN] combo install failed, retry verbose...
-    "%PYTHON%" -m pip install PyQt6==6.7.1 ctranslate2==4.6.3 faster-whisper==1.1.1 --no-warn-script-location
+    echo [FAIL] pip absent ou casse - code %errorlevel%
+    exit /b 1
 )
 
-echo [4/5] Installation deps annexes (micro + DOCX)...
-"%PYTHON%" -m pip install sounddevice numpy python-docx requests --no-warn-script-location --quiet
-if errorlevel 1 (
-    echo [WARN] annex deps install failed, retry verbose...
-    "%PYTHON%" -m pip install sounddevice numpy python-docx requests --no-warn-script-location
-)
+"%PYTHON%" -c "import urllib.request; urllib.request.urlopen('https://pypi.org', timeout=15); print('[DIAG] Reseau pypi.org OK')"
+if errorlevel 1 echo [WARN] pypi.org inaccessible depuis ce contexte - les pip vont echouer
 
-echo [5/5] Verification...
+echo.
+echo [1/4] Installation torch CPU (environ 200 MB, patienter)...
+"%PYTHON%" -m pip install torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu --no-warn-script-location
+if errorlevel 1 echo [WARN] torch install code %errorlevel%
+
+echo.
+echo [2/4] Installation combo pinne (PyQt6 + ctranslate2 + faster-whisper)...
+"%PYTHON%" -m pip install PyQt6==6.7.1 ctranslate2==4.6.3 faster-whisper==1.1.1 --no-warn-script-location
+if errorlevel 1 echo [WARN] combo install code %errorlevel%
+
+echo.
+echo [3/4] Installation deps annexes (micro + DOCX + requests)...
+"%PYTHON%" -m pip install sounddevice numpy python-docx requests --no-warn-script-location
+if errorlevel 1 echo [WARN] annex deps code %errorlevel%
+
+echo.
+echo [4/4] Verification...
 set "VERIFY_FAIL=0"
 
 "%PYTHON%" -c "import torch; print('[OK] torch', torch.__version__)"
@@ -80,6 +103,9 @@ if errorlevel 1 echo [WARN] sounddevice/numpy absent - bouton micro desactive
 "%PYTHON%" -c "import docx; print('[OK] python-docx')"
 if errorlevel 1 echo [WARN] python-docx absent - export DOCX desactive
 
+"%PYTHON%" -c "import requests; print('[OK] requests')"
+if errorlevel 1 set "VERIFY_FAIL=1"
+
 echo.
 if "%VERIFY_FAIL%"=="1" (
     echo ============================================
@@ -89,7 +115,6 @@ if "%VERIFY_FAIL%"=="1" (
 )
 
 echo ============================================
-echo  Installation terminee
+echo  Installation terminee %date% %time%
 echo ============================================
-
 exit /b 0

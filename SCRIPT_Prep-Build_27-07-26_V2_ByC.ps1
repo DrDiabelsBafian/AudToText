@@ -60,6 +60,20 @@ if ($SkipDownloads) {
     Write-Host "[1/5] Python 3.12 deja present" -ForegroundColor DarkGreen
 }
 
+# --- [1b] Enforce python312._pth patche (pip invisible pendant [Run] sinon) ---
+$pthFile = Join-Path $pyDir "python312._pth"
+if (Test-Path $pthFile) {
+    Set-Content $pthFile "python312.zip`r`n.`r`nLib\site-packages`r`nimport site" -Encoding ASCII
+    Write-Host "[OK] python312._pth patche (import site actif)" -ForegroundColor Green
+}
+
+# --- [1b] Enforce python312._pth patche (pip invisible pendant [Run] sinon) ---
+$pthFile = Join-Path $pyDir "python312._pth"
+if (Test-Path $pthFile) {
+    Set-Content $pthFile "python312.zip`r`n.`r`nLib\site-packages`r`nimport site" -Encoding ASCII
+    Write-Host "[OK] python312._pth patche (import site actif)" -ForegroundColor Green
+}
+
 # --- [2/5] FFmpeg Static ---
 $ffDir = Join-Path $buildDir "ffmpeg"
 if (-not $SkipDownloads -and -not (Test-Path (Join-Path $ffDir "ffmpeg.exe"))) {
@@ -200,4 +214,6 @@ Write-Host "  2. Ctrl+F9 pour compiler" -ForegroundColor White
 Write-Host "  3. Installeur genere dans: output\AudioToText_Setup_V11.0.exe" -ForegroundColor White
 Write-Host ""
 Read-Host "Entree pour fermer"
+
+
 
