@@ -1,3 +1,21 @@
+## [11.1] - 2026-09-17
+
+### Fixed
+- Amplification decided on peak level (max_volume) instead of mean - prevents clipping that destroyed VAD and produced empty transcripts
+- Gain capped at PEAK_TARGET_DB - max_db (target -1 dBFS), clipping impossible by construction
+- Amplified output in WAV 16 kHz mono instead of m4a (no double lossy pass)
+- initial_prompt truncated to 650 chars from the START (Whisper caps at 223 tokens and keeps the tail)
+- condition_on_previous_text disabled - a degenerate segment no longer poisons the rest of the file
+- no_repeat_ngram_size set to 0 when a prompt is active (it was gagging the very terms being promoted)
+- quick_transcribe: lang "auto" now maps to None
+- Domain dict generation produces bounded prose, not a term list
+- check_pyannote result cached
+- Archive collision: destination suffix loop (_2, _3) instead of a silent no-op leaving files in IN\
+- GUI reads combo widgets directly instead of cached attributes (blockSignals desync)
+- Persistent session log with flush() on every line
+
+### Changed
+- Version displayed as V11.1 (window title, badge, log header)
 # Changelog
 
 All notable changes to the installer kit. Format: Keep a Changelog, semver on the kit version.

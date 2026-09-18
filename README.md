@@ -2,8 +2,7 @@
 
 > **Offline AI transcription for Windows.** Drop an audio or video file, get an accurate, corrected, domain-aware transcript - powered by Whisper, running 100% locally. No cloud, no subscription, no data leaving your machine.
 
-![App](https://img.shields.io/badge/App-V11.0-8B5CF6?style=flat-square)
-![Installer](https://img.shields.io/badge/Installer-2.1-blueviolet?style=flat-square)
+![App](https://img.shields.io/badge/App-V11.1-8B5CF6?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
 ![Platform](https://img.shields.io/badge/Platform-Windows%2010%2F11%20x64-0078D6?style=flat-square)
 ![Privacy](https://img.shields.io/badge/Privacy-100%25%20local-success?style=flat-square)
@@ -24,7 +23,7 @@ Audio-To-Text is a desktop app (PyQt6 dark UI) built on **faster-whisper** that 
 
 ## Install (users)
 
-1. Download **`AudioToText_Setup_V11.0.exe`** from the [latest Release](../../releases/latest)
+1. Download **`AudioToText_Setup_V11.1.exe`** from the [latest Release](../../releases/latest)
 2. Double-click, follow the wizard (internet required once: dependencies ~400 MB, 3-10 min)
 3. Launch from the desktop shortcut - drop a file, press GO
 
@@ -53,7 +52,7 @@ This repository contains the **installer kit** (Inno Setup pipeline) that produc
 powershell -ExecutionPolicy Bypass -File .\SCRIPT_Prep-Build_27-07-26_V2_ByC.ps1 -SourceDir "path\to\app\source"
 
 # 2. Compile: open AudioToText_Installer.iss in Inno Setup 6.x, Ctrl+F9
-# 3. Ship output\AudioToText_Setup_V11.0.exe
+# 3. Ship output\AudioToText_Setup_V11.1.exe
 ```
 
 Key design choices: Python embedded over PyInstaller (no 800 MB blob, no DLL roulette), strictly pinned pip dependencies with a hard ctranslate2==4.6.3 guard (validated against a known PyQt6 DLL access-violation), `python312._pth` pre-patched in the build, self-logging post-install (`logs\post_install.log` on every client machine). Full details in [docs/](docs/) and [CHANGELOG.md](CHANGELOG.md).

@@ -14,7 +14,7 @@
 ; ============================================================
 
 #define MyAppName "Audio-To-Text"
-#define MyAppVersion "11.0"
+#define MyAppVersion "11.1"
 #define MyAppPublisher "Fabian DEBLAIS"
 #define MyAppExeName "AudioToText.bat"
 
