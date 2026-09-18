@@ -1,6 +1,6 @@
 ; ============================================================
 ; INSTALLER Inno Setup - Audio-To-Text
-; Version: 2.0 | Build: 27-07-26 | Target GUI: V11.0 (modular)
+; Version: 11.1 | Build: 17-09-26 | Target GUI: V11.1 (modular)
 ; Requires: Inno Setup 6.x (https://jrsoftware.org/isinfo.php)
 ;
 ; V2 CHANGES vs V1 (19-02-26):
